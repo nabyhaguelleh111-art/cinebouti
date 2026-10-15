@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CineBouti : explore des films, filtre-les par genre et garde tes coups de cœur.">
+  <title>CineBouti — Explorateur de films</title>
+
+  <!-- Polices : Bebas Neue pour les titres, Inter pour le texte -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap">
+
+  <!-- Feuille de style du projet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Script : "defer" l'exécute une fois le HTML entièrement chargé -->
+  <script src="js/script.js" defer></script>
+</head>
+<body>
+
+  <!-- ===== En-tête et navigation ===== -->
+  <header class="navbar" id="navbar">
+    <nav class="navbar__inner container" aria-label="Navigation principale">
+      <a href="#" class="logo" aria-label="CineBouti, retour à l'accueil">
+        <span class="logo__icon" aria-hidden="true">🎬</span>
+        <span class="logo__text">Cine<span class="logo__accent">Bouti</span></span>
+      </a>
+
+      <div class="navbar__actions">
+        <!-- Raccourci vers les favoris : le nombre est mis à jour par JavaScript -->
+        <button type="button" class="nav-btn" id="favorites-link" aria-label="Afficher mes favoris">
+          <span aria-hidden="true">♥</span>
+          <span class="nav-btn__label">Favoris</span>
+          <span class="badge" id="favorites-count">0</span>
+        </button>
+
+        <!-- Bouton de thème : JavaScript change l'icône et le libellé -->
+        <button type="button" class="icon-btn theme-toggle" id="theme-toggle"
+                aria-label="Activer le thème clair">
+          <span class="theme-toggle__icon" id="theme-icon" aria-hidden="true">🌙</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ===== Section d'accueil avec la recherche ===== -->
+    <section class="hero">
+      <div class="container hero__inner">
+        <h1 class="hero__title">Ton prochain film préféré t'attend.</h1>
+        <p class="hero__subtitle">Explore, filtre et garde tes coups de cœur.</p>
+
+        <!-- role="search" signale aux lecteurs d'écran qu'il s'agit d'une zone de recherche -->
+        <form class="search" role="search" id="search-form">
+          <label for="search-input" class="visually-hidden">Rechercher un film par son titre</label>
+          <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <line x1="16.5" y1="16.5" x2="21" y2="21" />
+          </svg>
+          <input type="search" id="search-input" class="search__input"
+                 placeholder="Rechercher un film…" autocomplete="off">
+          <button type="button" class="search__clear" id="search-clear"
+                  aria-label="Effacer la recherche" hidden>×</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== Catalogue : filtres + galerie ===== -->
+    <section class="catalog container" aria-labelledby="catalog-title">
+      <h2 class="catalog__title" id="catalog-title">Catalogue</h2>
+
+      <!-- Filtres par genre : data-genre indique à JavaScript quel genre afficher -->
+      <div class="filters" role="group" aria-label="Filtrer par genre">
+        <button type="button" class="filter-btn is-active" data-genre="tous" aria-pressed="true">Tous</button>
+        <button type="button" class="filter-btn" data-genre="action" aria-pressed="false">Action</button>
+        <button type="button" class="filter-btn" data-genre="comedie" aria-pressed="false">Comédie</button>
+        <button type="button" class="filter-btn" data-genre="drame" aria-pressed="false">Drame</button>
+        <button type="button" class="filter-btn" data-genre="science-fiction" aria-pressed="false">Science-fiction</button>
+        <button type="button" class="filter-btn" data-genre="animation" aria-pressed="false">Animation</button>
+        <button type="button" class="filter-btn filter-btn--favorites" data-genre="favoris" aria-pressed="false">♥ Favoris</button>
+      </div>
+
+      <!-- aria-live : le nombre de résultats est annoncé quand il change -->
+      <p class="results-count" id="results-count" aria-live="polite">0 film</p>
+
+      <!-- Galerie : les cartes sont ajoutées ici par JavaScript -->
+      <ul class="movie-grid" id="movie-grid"></ul>
+
+      <!-- Message affiché quand aucun film ne correspond -->
+      <div class="empty-state" id="empty-state" hidden>
+        <span class="empty-state__icon" aria-hidden="true">🎞️</span>
+        <p class="empty-state__text">Aucun film trouvé.</p>
+        <button type="button" class="btn" id="reset-filters">Réinitialiser les filtres</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== Pied de page ===== -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 CineBouti</p>
+    </div>
+  </footer>
+
+  <!-- Modèle d'une carte de film : il n'est pas affiché.
+       JavaScript le copie pour chaque film et remplit les informations. -->
+  <template id="movie-card-template">
+    <li class="movie-grid__item">
+      <article class="movie-card">
+        <div class="movie-card__poster">
+          <img class="movie-card__img" src="" alt="" loading="lazy">
+          <button type="button" class="favorite-btn" aria-pressed="false" aria-label="Ajouter aux favoris">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 21s-7.5-4.6-9.5-9.2C1.1 8.4 3.2 5 6.6 5c2 0 3.4 1.1 4.4 2.5C12 6.1 13.4 5 15.4 5c3.4 0 5.5 3.4 4.1 6.8C19.5 16.4 12 21 12 21z" />
+            </svg>
+          </button>
+        </div>
+        <div class="movie-card__body">
+          <h3 class="movie-card__title"></h3>
+          <p class="movie-card__meta">
+            <span class="movie-card__info"></span>
+            <span class="movie-card__rating"><span aria-hidden="true">★</span> <span class="movie-card__score"></span></span>
+          </p>
+        </div>
+      </article>
+    </li>
+  </template>
+
+</body>
+</html>
